@@ -1,56 +1,279 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>index</title>
-	<style>
-		/* Basic styles for readability */
-		body {
-			font-family: sans-serif;
-			max-width: 800px;
-			margin: 2em auto;
-			padding: 0 1em;
-			line-height: 1.6;
-		}
-		img { max-width: 100%; height: auto; }
-		pre { background-color: #f4f4f4; padding: 1em; overflow-x: auto; }
-		code { font-family: monospace; }
-	</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>nature of code : Strauch-Wind-Bewegungen</title>
+
+  <!-- p5.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+
+  <style>
+    body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background-color: white;
+    }
+
+    section {
+      margin: 40px 0;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .video-container {
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    #slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+      align-items: center;
+    }
+
+    .slider-label {
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .three-sketch-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mini-sketch {
+      width: 240px;
+      height: 200px;
+    }
+  </style>
 </head>
+
 <body>
-	<!--
-You can add style tags and also script:src tags into markdown
-if you use https://marketplace.cursorapi.com/items?itemName=fmoronzirfas.markdown-to-html
-It will be included into your html file
-Just make sure to keep a line break between the markdown tags and the style/script tags
--->
-<style>
-html,
-body {
-height: 100%;
-}
+  <h1>nature of code : Strauch-Wind-Bewegungen</h1>
 
-body {
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-}
-main {
-height: 100%;
-display: flex;
-justify-content: center;
-flex-direction: column;
-align-items: flex-end;
-}
-</style>
-<h1>hello world</h1>
-<main>
-<div id="sketch"></div>
-<script src="lib/p5.min.js"></script>
-<script src="index.js"></script>
-</main>
+  <section id="video-section">
+    <h2>Inspiration und Grundlage</h2>
+    <div class="video-container">
+      <video width="100%" controls>
+        <source src="./strauch.mp4" type="video/mp4" />
+        Ihr Browser unterstützt keine Videos.
+      </video>
+    </div>
+  </section>
 
+  <section id="text-section">
+    <h2>1. Grundlegende Bewegungstypen</h2>
+    <ul>
+      <li>Biegeschwingung: Äste verhalten sich wie biegsame Balken, fixiert an der Basis, beweglich im Wind.</li>
+      <li>Gedämpfte harmonische Schwingung: Rückbewegung mit abklingendem Nachschwingen durch Luftwiderstand.</li>
+    </ul>
+    <h2>2. Kräfte und Dynamik</h2>
+    <ul>
+      <li>Aerodynamische Anregung: Winddruck abhängig von Windgeschwindigkeit² und Blattwinkel.</li>
+      <li>Elastische Rückstellkraft: “Federkraft” des Astes, abhängig vom Biegemodul.</li>
+      <li>Torsionale Bewegung: Verwindung um die Längsachse bei asymmetrischem Wind.</li>
+    </ul>
+    <h2>3. Typisches Bewegungsmuster</h2>
+    <ul>
+      <li>Initiale Ablenkung: Plötzliche Bewegung in Windrichtung.</li>
+      <li>Trägheitsverzögerung: Masse verzögert die Reaktion.</li>
+      <li>Rückschwung mit Dämpfung: Bewegung zurück mit abnehmender Amplitude.</li>
+      <li>Stochastische Varianz: Unregelmäßige Mikrobewegungen durch Windstöße.</li>
+    </ul>
+    <h2>4. Simulationstaugliche Begriffe / Modellierung</h2>
+    <ul>
+      <li>Spring-Damper-System: Äste als Masse-Feder-Dämpfer-System.</li>
+      <li>Kinematische Ketten: Hierarchische Bewegungssysteme mit Inverser Kinematik.</li>
+      <li>Perlin Noise / Turbulenzfelder: Für chaotische Windrichtungen und -stärken.</li>
+    </ul>
+  </section>
+
+  <section id="sketch1-section">
+    <h2>Erster abstrakter Sketch</h2>
+    <div id="canvas-container"></div>
+  </section>
+
+  <section id="sketch2-section">
+    <h2>Strauch Animation</h2>
+    <div id="sketch2"></div>
+  </section>
+
+  <section id="sketch3-section">
+    <h2>Versuch mit Partikelsystem</h2>
+    <div id="sketch3"></div>
+  </section>
+
+  <section id="sketch4-section">
+    <h2>Strauch-Variationen</h2>
+    <div id="controls">
+      <label>Länge: <span id="lengthValue">60</span></label>
+      <input type="range" id="sliderLength" min="30" max="100" value="60" />
+
+      <label>Winkelbereich: <span id="angleValue">40</span></label>
+      <input type="range" id="sliderAngle" min="10" max="80" value="40" />
+
+      <label>Dichte: <span id="densityValue">20</span></label>
+      <input type="range" id="sliderDensity" min="5" max="40" value="20" />
+    </div>
+    <div id="sketch4"></div>
+  </section>
+
+  <section id="sketch5-section">
+    <h2>Farbvariationen</h2>
+    <div class="three-sketch-row">
+      <div id="colorSketch1" class="mini-sketch"></div>
+      <div id="colorSketch2" class="mini-sketch"></div>
+      <div id="colorSketch3" class="mini-sketch"></div>
+    </div>
+  </section>
+
+  <!-- JavaScript Sketch-Dateien -->
+  <script src="index.js"></script>
+  <script src="sketch2.js"></script>
+  <script src="sketch4.js"></script>
+  <script src="sketch5.js"></script>
+
+  <!-- Inline Sketch 3 -->
+  <script>
+    let sketch3 = function(p) {
+      let particles = [];
+      let springs = [];
+      let windTime = 0;
+
+      p.setup = function() {
+        let canvas = p.createCanvas(600, 400);
+        canvas.parent('sketch3');
+
+        for (let x = 50; x < p.width; x += 100) {
+          createBush(x, p.height - 50, 5);
+        }
+      };
+
+      function createBush(baseX, baseY, branchCount) {
+        let base = new Particle(baseX, baseY, true);
+        particles.push(base);
+
+        for (let i = 0; i < branchCount; i++) {
+          let angle = p.random(-45, 45);
+          let length = p.random(50, 80);
+          let endX = baseX + p.cos(p.radians(angle)) * length;
+          let endY = baseY - p.sin(p.radians(angle)) * length;
+
+          let branch = new Particle(endX, endY);
+          particles.push(branch);
+
+          let spring = new Spring(base, branch, length);
+          springs.push(spring);
+
+          createBranch(branch, 3, length * 0.6);
+        }
+      }
+
+      function createBranch(parent, depth, length) {
+        if (depth <= 0) return;
+
+        let angle = p.random(-30, 30);
+        let endX = parent.pos.x + p.cos(p.radians(angle)) * length;
+        let endY = parent.pos.y - p.sin(p.radians(angle)) * length;
+
+        let child = new Particle(endX, endY);
+        particles.push(child);
+
+        let spring = new Spring(parent, child, length);
+        springs.push(spring);
+
+        createBranch(child, depth - 1, length * 0.7);
+      }
+
+      p.draw = function() {
+        p.background(255);
+        windTime += 0.01;
+
+        let wind = p.createVector(p.noise(windTime) * 2 - 1, 0);
+        wind.mult(0.5);
+
+        for (let particle of particles) {
+          if (!particle.anchored) {
+            particle.applyForce(wind);
+            particle.applyForce(p.createVector(0, 0.1));
+            particle.update();
+          }
+        }
+
+        for (let spring of springs) {
+          spring.update();
+        }
+
+        for (let particle of particles) {
+          particle.display();
+        }
+      };
+
+      class Particle {
+        constructor(x, y, anchored = false) {
+          this.pos = p.createVector(x, y);
+          this.vel = p.createVector(0, 0);
+          this.acc = p.createVector(0, 0);
+          this.anchored = anchored;
+        }
+
+        applyForce(force) {
+          if (!this.anchored) {
+            this.acc.add(force);
+          }
+        }
+
+        update() {
+          this.vel.add(this.acc);
+          this.vel.mult(0.98);
+          this.pos.add(this.vel);
+          this.acc.mult(0);
+        }
+
+        display() {
+          p.stroke(0);
+          p.strokeWeight(4);
+          p.point(this.pos.x, this.pos.y);
+        }
+      }
+
+      class Spring {
+        constructor(p1, p2, len) {
+          this.p1 = p1;
+          this.p2 = p2;
+          this.len = len;
+          this.k = 0.1;
+        }
+
+        update() {
+          let force = p5.Vector.sub(this.p2.pos, this.p1.pos);
+          let currentLen = force.mag();
+          let stretch = currentLen - this.len;
+
+          force.normalize();
+          force.mult(-1 * this.k * stretch);
+
+          this.p1.applyForce(force);
+          this.p2.applyForce(force.mult(-1));
+        }
+      }
+    };
+
+    new p5(sketch3);
+  </script>
 </body>
 </html>
